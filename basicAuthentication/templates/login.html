@@ -1,0 +1,82 @@
+<!-- templates/registration/login.html -->
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-5">
+  <div class="row justify-content-center">
+    <div class="col-md-6 col-lg-4">
+      <div class="card shadow-lg animate__animated animate__fadeIn">
+        <div class="card-body p-5">
+          <h2 class="text-center mb-4">Welcome Back!</h2>
+          
+          <!-- Display success messages if any -->
+          {% if messages %}
+            {% for message in messages %}
+              <div class="alert alert-{{ message.tags }} animate__animated animate__fadeIn">
+                {{ message.content }}
+              </div>
+            {% endfor %}
+          {% endif %}
+          
+          <form method="post" class="needs-validation" novalidate>
+            {% csrf_token %}
+            
+            <!-- Username Field -->
+            <div class="form-floating mb-3">
+              <input type="text" name="username" class="form-control" id="username" 
+                     placeholder="Username" required autofocus>
+              <label for="username">Username</label>
+            </div>
+            
+            <!-- Password Field -->
+            <div class="form-floating mb-4">
+              <input type="password" name="password" class="form-control" 
+                     id="password" placeholder="Password" required>
+              <label for="password">Password</label>
+            </div>
+            
+            <button type="submit" class="btn btn-primary w-100 py-2 mb-3">
+              <span class="spinner-border spinner-border-sm d-none" role="status"></span>
+              <span class="button-text">Login</span>
+            </button>
+            
+            {% if form_errors %}
+              <div class="alert alert-danger animate__animated animate__shakeX">
+                Invalid username or password.
+              </div>
+            {% endif %}
+            
+            <p class="text-center mt-3">
+              Don't have an account? 
+              <a href="{% url 'accounts:register' %}" class="text-decoration-none">Sign up</a>
+            </p>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Form submission handler
+  document.querySelector('form').addEventListener('submit', function(e) {
+    const form = this;
+    if (!form.checkValidity()) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+    
+    form.classList.add('was-validated');
+    
+    const btn = this.querySelector('button[type="submit"]');
+    if (form.checkValidity()) {
+      btn.disabled = true;
+      btn.querySelector('.spinner-border').classList.remove('d-none');
+      btn.querySelector('.button-text').textContent = 'Logging in...';
+    }
+  });
+</script>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+{% endblock %}
