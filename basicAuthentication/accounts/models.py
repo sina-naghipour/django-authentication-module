@@ -29,3 +29,4 @@ class CustomUser(AbstractUser):
 
         ordering = ['-date_joined']
         
+        
