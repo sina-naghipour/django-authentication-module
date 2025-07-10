@@ -2,12 +2,43 @@
 
 {% block content %}
 <div class="form-container">
-  <h2>Login</h2>
-  <form method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit" class="btn">Login</button>
-  </form>
-  <p>No account? <a href="{% url 'register' %}">Register</a></p>
+    <h2 class="text-center mb-4">Login</h2>
+    
+    <!-- Display error message if exists -->
+    {% if error %}
+    <div class="alert alert-danger mb-3">
+        {{ error }}
+    </div>
+    {% endif %}
+    
+    <form method="post">
+        {% csrf_token %}
+        
+        <div class="mb-3">
+            {{ form.username.label_tag }}
+            {{ form.username }}
+            {% if form.username.errors %}
+                <div class="invalid-feedback d-block">
+                    {{ form.username.errors|striptags }}
+                </div>
+            {% endif %}
+        </div>
+        
+        <div class="mb-3">
+            {{ form.password.label_tag }}
+            {{ form.password }}
+            {% if form.password.errors %}
+                <div class="invalid-feedback d-block">
+                    {{ form.password.errors|striptags }}
+                </div>
+            {% endif %}
+        </div>
+        
+        <button type="submit" class="btn btn-primary w-100">Login</button>
+    </form>
+    
+    <div class="text-center mt-3">
+        <p>No account? <a href="{% url 'account:register' %}">Register here</a></p>
+    </div>
 </div>
 {% endblock %}

@@ -2,12 +2,28 @@
 
 {% block content %}
 <div class="form-container">
-  <h2>Register</h2>
-  <form method="post" enctype="multipart/form-data">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit" class="btn">Register</button>
-  </form>
-  <p>Already registered? <a href="{% url 'login' %}">Login</a></p>
+    <h2 class="text-center mb-4">Register</h2>
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {% for field in form %}
+            <div class="mb-3">
+                {{ field.label_tag }}
+                {{ field }}
+                {% if field.errors %}
+                    <div class="invalid-feedback d-block">
+                        {{ field.errors|striptags }}
+                    </div>
+                {% endif %}
+                {% if field.help_text %}
+                    <br />
+                    <small class="form-text text-muted">{{ field.help_text }}</small>
+                {% endif %}
+            </div>
+        {% endfor %}
+        <button type="submit" class="btn btn-primary w-100">Register</button>
+    </form>
+    <div class="text-center mt-3">
+        <p>Already registered? <a href="{% url 'account:login' %}">Login here</a></p>
+    </div>
 </div>
 {% endblock %}

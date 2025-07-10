@@ -2,11 +2,156 @@
 
 {% block content %}
 <div class="form-container">
-  <h2>{% if form.instance.pk %}Edit{% else %}Create{% endif %} Post</h2>
-  <form method="post" enctype="multipart/form-data">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit" class="btn">Save</button>
-  </form>
+    <h2 class="text-center mb-4">Create Post</h2>
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+
+        <!-- Title Field -->
+        <div class="mb-3">
+            <label for="id_title" class="form-label">Title</label>
+            <input type="text" class="form-control" id="id_title" name="title"
+                value="{{ form.title.value|default_if_none:'' }}">
+            {% if form.title.errors %}
+            <div class="invalid-feedback d-block">
+                {{ form.title.errors|striptags }}
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Content Field -->
+        <div class="mb-3">
+            <label for="id_content" class="form-label">Content</label>
+            <textarea class="form-control" id="id_content" name="content" rows="8">
+                {{ form.content.value|default_if_none:'' }}
+            </textarea>
+            {% if form.content.errors %}
+            <div class="invalid-feedback d-block">
+                {{ form.content.errors|striptags }}
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Status Field -->
+        <div class="mb-3">
+            <label for="id_status" class="form-label">Status</label>
+            <select class="form-control" id="id_status" name="status">
+                {% for value, label in form.fields.status.choices %}
+                <option value="{{ value }}" {% if form.status.value == value %}selected{% endif %}>
+                    {{ label }}
+                </option>
+                {% endfor %}
+            </select>
+            {% if form.status.errors %}
+            <div class="invalid-feedback d-block">
+                {{ form.status.errors|striptags }}
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Image Field -->
+        <div class="mb-3">
+            <label for="id_image" class="form-label">Featured Image</label>
+            <input type="file" class="form-control" id="id_image" name="image">
+            {% if form.image.errors %}
+            <div class="invalid-feedback d-block">
+                {{ form.image.errors|striptags }}
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Categories Field -->
+        <div class="mb-3">
+            <label class="form-label">Categories</label>
+            <div class="tag-input-container border rounded p-2">
+                <div id="tag-container" class="d-flex flex-wrap gap-2 mb-2">
+                    {% if form.categories.value %}
+                    {% for tag in form.categories.value.split %}
+                    <span class="tag-badge bg-primary text-white rounded-pill px-3 py-1">
+                        {{ tag }}
+                        <input type="hidden" name="categories" value="{{ tag }}">
+                        <span class="remove-tag" onclick="removeTag(this)">×</span>
+                    </span>
+                    {% endfor %}
+                    {% endif %}
+                </div>
+                <input type="text" id="category-input" class="form-control border-0"
+                    placeholder="Type and press space...">
+                <input type="hidden" id="id_categories" name="categories"
+                    value="{{ form.categories.value|default_if_none:'' }}">
+            </div>
+            <small class="text-muted">Press space after each category</small>
+            <button type="submit" class="btn btn-primary w-100">Save Post</button>
+    </form>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const tagContainer = document.getElementById('tag-container');
+        const categoryInput = document.getElementById('category-input');
+        const hiddenInput = document.getElementById('id_categories');
+
+        // Handle tag creation
+        categoryInput.addEventListener('keydown', function (e) {
+            if (e.key === ' ' || e.key === 'Enter') {
+                e.preventDefault();
+                const categoryName = this.value.trim();
+                if (categoryName) {
+                    // Get current tags
+                    let currentTags = hiddenInput.value ? hiddenInput.value.split(',') : [];
+
+                    // Add new tag if not already present
+                    if (!currentTags.includes(categoryName)) {
+                        currentTags.push(categoryName);
+                        hiddenInput.value = currentTags.join(',');
+
+                        // Create the visual tag badge
+                        const tagBadge = document.createElement('span');
+                        tagBadge.className = 'tag-badge bg-primary text-white rounded-pill px-3 py-1';
+                        tagBadge.innerHTML = `
+                        ${categoryName}
+                        <input type="hidden" name="categories" value="${categoryName}">
+                        <span class="remove-tag" onclick="removeTag(this)">×</span>
+                    `;
+                        tagContainer.appendChild(tagBadge);
+                    }
+
+                    // Clear input
+                    this.value = '';
+                }
+            }
+        });
+
+        // Prevent form submission when pressing enter in tag input
+        categoryInput.addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+            }
+        });
+    });
+
+    function removeTag(element) {
+        const tagBadge = element.parentElement;
+        const tagValue = tagBadge.querySelector('input').value;
+        const hiddenInput = document.getElementById('id_categories');
+
+        // Remove from hidden input
+        let currentTags = hiddenInput.value.split(',');
+        currentTags = currentTags.filter(tag => tag !== tagValue);
+        hiddenInput.value = currentTags.join(',');
+
+        // Remove visual tag
+        tagBadge.remove();
+    }
+</script>
+<script>
+document.getElementById('id_image').addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    const allowedTypes = ['image/jpeg', 'image/png'];
+    
+    if (!allowedTypes.includes(file.type)) {
+        alert('Only JPEG and PNG files are allowed!');
+        e.target.value = ''; // Clear the file input
+    }
+});
+</script>
 {% endblock %}

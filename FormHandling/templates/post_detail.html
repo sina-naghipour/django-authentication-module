@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <article class="post-detail">
+        <!-- Post Title -->
+        <h1 class="mb-3">{{ post.title }}</h1>
+        
+        <!-- Post Meta (Author, Date) -->
+        <div class="d-flex justify-content-between align-items-center mb-3 text-muted">
+            <div>
+                <span class="author">By {{ post.author.username }}</span>
+                <span class="mx-2">•</span>
+                <span class="date">{{ post.created_at|date:"F j, Y" }}</span>
+            </div>
+            <span class="badge bg-secondary">{{ post.status }}</span>
+        </div>
+        
+        <!-- Featured Image -->
+        {% if post.image %}
+        <div class="post-image mb-4">
+            <img src="{{ post.image.url }}" alt="{{ post.title }}" class="img-fluid rounded">
+        </div>
+        {% endif %}
+        
+        <!-- Post Content -->
+        <div class="post-content mb-4">
+            {{ post.content|linebreaks }}
+        </div>
+        
+        <!-- Categories -->
+        {% if post.categories.exists %}
+        <div class="categories mb-4">
+            <h5>Categories:</h5>
+            <div class="d-flex flex-wrap gap-2">
+                {% for category in post.categories.all %}
+                <a href="{% url 'category_posts' category.slug %}" class="badge bg-primary text-decoration-none">
+                    {{ category.name }}
+                </a>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+        
+
+    </article>
+</div>
+{% endblock %}
