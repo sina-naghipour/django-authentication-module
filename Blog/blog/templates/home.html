@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<section class="hero bg-gradient-to-r from-gray to-dark py-20 rounded-xl mb-16">
+    <div class="container mx-auto px-6 text-center">
+        <h1 class="text-5xl font-bold text-teal mb-6">Welcome to ModernBlog</h1>
+        <p class="text-xl text-light max-w-2xl mx-auto">A sleek, modern blogging platform built with Django. Share your thoughts with the world.</p>
+        <div class="mt-8">
+            <a href="{% url 'core:post_list' %}" class="bg-teal text-dark px-6 py-3 rounded-lg text-lg font-medium hover:bg-light transition mr-4">Browse Posts</a>
+            {% if not user.is_authenticated %}
+            <a href="{% url 'accounts:register' %}" class="border border-teal text-teal px-6 py-3 rounded-lg text-lg font-medium hover:bg-teal hover:text-dark transition">Join Now</a>
+            {% endif %}
+        </div>
+    </div>
+</section>
+
+<section class="featured-posts mb-16">
+    <h2 class="text-3xl font-bold text-teal mb-8 text-center">Featured Posts</h2>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        {% for post in featured_posts %}
+        <div class="bg-gray rounded-xl overflow-hidden shadow-lg hover:shadow-teal transition">
+            <div class="h-48 bg-teal overflow-hidden">
+                {% if post.image %}
+                <img src="{{ post.image.url }}" alt="{{ post.title }}" class="w-full h-full object-cover">
+                {% else %}
+                <div class="w-full h-full flex items-center justify-center text-dark">
+                    <i class="fas fa-image text-6xl"></i>
+                </div>
+                {% endif %}
+            </div>
+            <div class="p-6">
+                <div class="flex items-center text-sm text-light mb-2">
+                    <span>{{ post.published_date|date:"M d, Y" }}</span>
+                    <span class="mx-2">•</span>
+                    <span>{{ post.author.username }}</span>
+                </div>
+                <h3 class="text-xl font-bold mb-3 text-light">{{ post.title }}</h3>
+                <p class="text-light mb-4">{{ post.excerpt|truncatechars:120 }}</p>
+                <a href="{% url 'core:post_detail' post.slug %}" class="text-teal hover:text-light transition font-medium">Read More →</a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</section>
+
+<section class="newsletter bg-gray rounded-xl p-8">
+    <div class="max-w-2xl mx-auto text-center">
+        <h2 class="text-2xl font-bold text-teal mb-4">Stay Updated</h2>
+        <p class="text-light mb-6">Subscribe to our newsletter to get the latest posts delivered to your inbox.</p>
+        <form class="flex flex-col sm:flex-row gap-4">
+            <input type="email" placeholder="Your email address" class="flex-grow px-4 py-3 rounded-lg bg-dark border border-teal text-light focus:outline-none focus:ring-2 focus:ring-teal">
+            <button type="submit" class="bg-teal text-dark px-6 py-3 rounded-lg font-medium hover:bg-light transition">Subscribe</button>
+        </form>
+    </div>
+</section>
+{% endblock %}
